@@ -1,0 +1,9 @@
+{
+  "name": "golden-dragon-root",
+  "version": "1.0.0",
+  "description": "Root orchestrator for Golden Dragon Sushi & Dim Sum delivery platform",
+  "scripts": {
+    "dev": "powershell -Command \"Start-Process npm -ArgumentList 'run dev' -WorkingDirectory backend; Start-Process npm -ArgumentList 'run dev' -WorkingDirectory frontend\"",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend"
+  }
+}
