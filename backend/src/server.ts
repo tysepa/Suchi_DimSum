@@ -18,8 +18,20 @@ app.use(express.json());
 // Serve static assets (images folder)
 app.use(express.static(path.resolve(__dirname, '../public')));
 
+// Serve frontend build static files
+const frontendDistPath = path.resolve(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDistPath));
+
 // Register Routes
 app.use('/api', router);
+
+// Serve frontend index.html for any other non-API routes (SPA fallback)
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  }
+});
+
 
 // Error Handling Middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

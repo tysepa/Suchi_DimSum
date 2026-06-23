@@ -11,7 +11,9 @@ import AdminDashboard from './components/AdminDashboard';
 import { ChefHat, Truck, Clock, Sparkles, MapPin, Phone, Award } from 'lucide-react';
 
 
-const BACKEND_URL = 'http://localhost:5000';
+const BACKEND_URL = window.location.port === '5173' 
+  ? 'http://localhost:5000' 
+  : window.location.origin;
 
 function App() {
   const [isAdminMode, setIsAdminMode] = useState(false);
