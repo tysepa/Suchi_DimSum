@@ -168,29 +168,60 @@ export const initializeDatabase = async () => {
 
   // Seed default Gallery items if empty
   const galleryCount = await query('SELECT COUNT(*) as count FROM gallery');
+  const defaultGallery = [
+    {
+      imageUrl: '/images/gallery_sushi_plating.png',
+      caption: 'Master chef meticulously plating our signature premium sashimi platter.'
+    },
+    {
+      imageUrl: '/images/gallery_dim_sum_steam.png',
+      caption: 'Freshly steamed dim sum baskets served piping hot from the kitchen.'
+    },
+    {
+      imageUrl: '/images/gallery_restaurant_interior.png',
+      caption: 'Our modern, sleek dining hall designed for a premium dining atmosphere.'
+    },
+    {
+      imageUrl: '/images/gallery_dim_sum_making.png',
+      caption: 'Handcrafted dim sum prepared daily by our traditional chefs.'
+    },
+    // Chef Muami in Action photos
+    {
+      imageUrl: '/images/chef_fish.jpg',
+      caption: 'Chef Muami inspecting fresh catches daily, selecting only the finest grade fish for our guests.'
+    },
+    {
+      imageUrl: '/images/chef_team.jpg',
+      caption: 'Chef Muami and his culinary team presenting our signature custom-crafted catering platters.'
+    },
+    {
+      imageUrl: '/images/chef_angel_pose.jpg',
+      caption: 'Chef Muami Suleiman standing tall as culinary director of Golden Dragon, merging traditional training with modern execution.'
+    },
+    {
+      imageUrl: '/images/chef_skol_backdrop.jpg',
+      caption: 'Chef Muami presenting signature appetizers at a premium corporate culinary event.'
+    },
+    {
+      imageUrl: '/images/chef_angel_smile.jpg',
+      caption: 'Culinary Director Chef Muami sharing his passion for authentic Pan-Asian flavors.'
+    }
+  ];
+
   if (galleryCount[0].count === 0) {
     console.log('Seeding default gallery items...');
-    const defaultGallery = [
-      {
-        imageUrl: '/images/gallery_sushi_plating.png',
-        caption: 'Master chef meticulously plating our signature premium sashimi platter.'
-      },
-      {
-        imageUrl: '/images/gallery_dim_sum_steam.png',
-        caption: 'Freshly steamed dim sum baskets served piping hot from the kitchen.'
-      },
-      {
-        imageUrl: '/images/gallery_restaurant_interior.png',
-        caption: 'Our modern, sleek dining hall designed for a premium dining atmosphere.'
-      },
-      {
-        imageUrl: '/images/gallery_dim_sum_making.png',
-        caption: 'Handcrafted dim sum prepared daily by our traditional chefs.'
-      }
-    ];
-
     for (const item of defaultGallery) {
       await run('INSERT INTO gallery (imageUrl, caption) VALUES (?, ?)', [item.imageUrl, item.caption]);
+    }
+  } else {
+    // If database already exists, make sure the 5 new chef action photos are added
+    console.log('Verifying if new chef gallery photos are present...');
+    for (const item of defaultGallery) {
+      const exists = await query('SELECT * FROM gallery WHERE imageUrl = ?', [item.imageUrl]);
+      if (exists.length === 0) {
+        console.log(`Inserting missing gallery item: ${item.imageUrl}`);
+        await run('INSERT INTO gallery (imageUrl, caption) VALUES (?, ?)', [item.imageUrl, item.caption]);
+      }
     }
   }
 

@@ -15,6 +15,16 @@ const BACKEND_URL = window.location.port === '5173'
   ? 'http://localhost:5000' 
   : window.location.origin;
 
+const CHEF_PHOTOS = [
+  { src: '/images/chef_muami.jpg', label: 'Master Chef Portrait' },
+  { src: '/images/chef_muami_alternate.jpg', label: 'Artistry in Action' },
+  { src: '/images/chef_fish.jpg', label: 'Selecting Fresh Catch' },
+  { src: '/images/chef_team.jpg', label: 'Culinary Team Presentation' },
+  { src: '/images/chef_angel_pose.jpg', label: 'Culinary Director Pose' },
+  { src: '/images/chef_skol_backdrop.jpg', label: 'Corporate Showcase Event' },
+  { src: '/images/chef_angel_smile.jpg', label: 'Culinary Director Smile' }
+];
+
 function App() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -55,10 +65,11 @@ function App() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setChefPhotoIndex((prev) => (prev === 0 ? 1 : 0));
+      setChefPhotoIndex((prev) => (prev + 1) % CHEF_PHOTOS.length);
     }, 7000);
     return () => clearInterval(timer);
   }, []);
+
 
 
   // Fetch menu and gallery data
@@ -571,67 +582,124 @@ function App() {
                       overflow: 'hidden',
                       boxShadow: 'var(--shadow-lg)'
                     }}>
-                      {/* Image 2 (Artistry in Action) */}
-                      <img 
-                        src={`${BACKEND_URL}/images/chef_muami_alternate.jpg`} 
-                        alt="Chef Muami Suleiman Alternate view" 
-                        className="chef-img-layer"
+                      {CHEF_PHOTOS.map((photo, index) => (
+                        <img 
+                          key={index}
+                          src={`${BACKEND_URL}${photo.src}`} 
+                          alt={`Chef Muami Suleiman - ${photo.label}`} 
+                          className="chef-img-layer"
+                          style={{
+                            opacity: chefPhotoIndex === index ? 1 : 0,
+                            pointerEvents: chefPhotoIndex === index ? 'auto' : 'none',
+                            transition: 'opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)'
+                          }}
+                          onError={(e) => {
+                            e.currentTarget.src = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=800&auto=format&fit=crop";
+                          }}
+                        />
+                      ))}
+
+                      {/* Left/Right Navigation Arrows overlay */}
+                      <button 
+                        onClick={() => setChefPhotoIndex((prev) => (prev === 0 ? CHEF_PHOTOS.length - 1 : prev - 1))}
                         style={{
-                          opacity: chefPhotoIndex === 1 ? 1 : 0,
-                          pointerEvents: chefPhotoIndex === 1 ? 'auto' : 'none'
+                          position: 'absolute',
+                          left: '16px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'rgba(0,0,0,0.6)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          color: 'white',
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          transition: 'var(--transition-smooth)',
+                          zIndex: 10
                         }}
-                        onError={(e) => {
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=800&auto=format&fit=crop";
-                        }}
-                      />
-                      {/* Image 1 (Portrait) */}
-                      <img 
-                        src={`${BACKEND_URL}/images/chef_muami.jpg`} 
-                        alt="Chef Muami Suleiman" 
-                        className="chef-img-layer"
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-gold)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.6)'}
+                        aria-label="Previous image"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                      </button>
+                      <button 
+                        onClick={() => setChefPhotoIndex((prev) => (prev === CHEF_PHOTOS.length - 1 ? 0 : prev + 1))}
                         style={{
-                          opacity: chefPhotoIndex === 0 ? 1 : 0,
-                          pointerEvents: chefPhotoIndex === 0 ? 'auto' : 'none'
+                          position: 'absolute',
+                          right: '16px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'rgba(0,0,0,0.6)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          color: 'white',
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          transition: 'var(--transition-smooth)',
+                          zIndex: 10
                         }}
-                        onError={(e) => {
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=800&auto=format&fit=crop";
-                        }}
-                      />
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-gold)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0,0,0,0.6)'}
+                        aria-label="Next image"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                      </button>
+
+                      {/* Small Caption Label on bottom of photo */}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: '16px 20px',
+                        background: 'linear-gradient(transparent, rgba(0,0,0,0.85))',
+                        color: 'white',
+                        zIndex: 5,
+                        pointerEvents: 'none'
+                      }}>
+                        <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-gold)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '2px' }}>
+                          Chef Muami Suleiman
+                        </p>
+                        <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.8)' }}>
+                          {CHEF_PHOTOS[chefPhotoIndex].label}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Manual selector tabs */}
+                  {/* Dot Indicators */}
                   <div style={{
                     display: 'flex',
                     justifyContent: 'center',
-                    gap: '12px',
-                    marginTop: '36px',
+                    alignItems: 'center',
+                    gap: '10px',
+                    marginTop: '24px',
                     zIndex: 3,
                     position: 'relative'
                   }}>
-                    {[
-                      { label: 'Master Chef Portrait', index: 0 },
-                      { label: 'Artistry in Action', index: 1 }
-                    ].map((btn) => (
+                    {CHEF_PHOTOS.map((photo, idx) => (
                       <button
-                        key={btn.index}
-                        onClick={() => setChefPhotoIndex(btn.index)}
+                        key={idx}
+                        onClick={() => setChefPhotoIndex(idx)}
+                        title={photo.label}
                         style={{
-                          padding: '8px 16px',
-                          borderRadius: 'var(--radius-sm)',
-                          fontSize: '0.78rem',
-                          fontWeight: 600,
-                          border: chefPhotoIndex === btn.index ? '1px solid var(--color-gold)' : '1px solid var(--border-light)',
-                          background: chefPhotoIndex === btn.index ? 'var(--color-gold-light)' : 'rgba(0,0,0,0.4)',
-                          color: chefPhotoIndex === btn.index ? 'var(--color-gold)' : 'var(--text-secondary)',
+                          width: chefPhotoIndex === idx ? '24px' : '8px',
+                          height: '8px',
+                          borderRadius: 'var(--radius-full)',
+                          background: chefPhotoIndex === idx ? 'var(--color-gold)' : 'rgba(255,255,255,0.25)',
+                          border: 'none',
                           transition: 'var(--transition-smooth)',
-                          cursor: 'pointer',
-                          letterSpacing: '0.02em',
-                          textTransform: 'uppercase'
+                          cursor: 'pointer'
                         }}
-                      >
-                        {btn.label}
-                      </button>
+                      />
                     ))}
                   </div>
 
