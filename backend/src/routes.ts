@@ -2,6 +2,9 @@ import { Router, Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { query, run } from './db';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'premium-sushi-dim-sum-secret-key-2026';
@@ -31,6 +34,48 @@ export const authenticateAdmin = (req: AuthenticatedRequest, res: Response, next
     return res.status(403).json({ message: 'Invalid or expired token' });
   }
 };
+
+// Configure Multer Storage for local device uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.resolve(__dirname, '../public/images');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, 'upload-' + uniqueSuffix + ext);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit size to 5MB
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpeg|jpg|png|webp|gif/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only images (jpg, jpeg, png, webp, gif) are allowed'));
+  }
+});
+
+// File upload endpoint (protected, Admin only)
+router.post('/upload', authenticateAdmin, upload.single('image'), (req: AuthenticatedRequest, res: Response) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+  
+  const fileUrl = `/images/${req.file.filename}`;
+  return res.json({ imageUrl: fileUrl });
+});
+
 
 // ==========================================
 // 1. ADMIN AUTHENTICATION

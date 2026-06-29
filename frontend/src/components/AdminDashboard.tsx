@@ -65,6 +65,43 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   // Status feedback states
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [formMsg, setFormMsg] = useState({ text: '', type: 'success' });
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, targetForm: 'product' | 'gallery') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setFormMsg({ text: '', type: 'success' });
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch(`${backendUrl}/api/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Image upload failed');
+
+      if (targetForm === 'product') {
+        setProdForm((prev) => ({ ...prev, imageUrl: data.imageUrl }));
+      } else {
+        setGalleryForm((prev) => ({ ...prev, imageUrl: data.imageUrl }));
+      }
+      setFormMsg({ text: 'Image uploaded successfully from your device', type: 'success' });
+    } catch (err: any) {
+      setFormMsg({ text: err.message || 'Error uploading image', type: 'error' });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
 
   // Log in administrative handler
   const handleLogin = async (e: React.FormEvent) => {
@@ -541,8 +578,54 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   />
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Image URL / Path</label>
+                <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label className="form-label" style={{ margin: 0 }}>Image Source</label>
+                  
+                  {/* File Upload Selector */}
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <label 
+                      className="btn btn-secondary btn-sm"
+                      style={{
+                        margin: 0,
+                        cursor: 'pointer',
+                        padding: '10px 16px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      <Image size={16} className="gold-text" />
+                      {isUploading ? 'Uploading...' : 'Choose Local File'}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => handleImageUpload(e, 'product')} 
+                        disabled={isUploading}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+
+                    {prodForm.imageUrl && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <img 
+                          src={prodForm.imageUrl.startsWith('http') ? prodForm.imageUrl : `${backendUrl}${prodForm.imageUrl}`} 
+                          alt="Preview" 
+                          style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--color-gold)' }}
+                        />
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '120px' }}>
+                          Selected
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '8px 0' }}>
+                    <div style={{ flexGrow: 1, height: '1px', background: 'var(--border-light)' }} />
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>or use URL path</span>
+                    <div style={{ flexGrow: 1, height: '1px', background: 'var(--border-light)' }} />
+                  </div>
+
                   <input
                     type="text"
                     required
@@ -551,10 +634,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     onChange={(e) => setProdForm({ ...prodForm, imageUrl: e.target.value })}
                     className="form-control"
                   />
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     Available defaults: `/images/dragon_roll.png`, `/images/salmon_nigiri.png`, `/images/spicy_tuna.png`, `/images/har_gow.png`, `/images/shumai.png`, `/images/char_siu_bao.png`
                   </span>
                 </div>
+
 
                 <div className="form-group" style={{ marginBottom: '24px' }}>
                   <label className="form-label">Description</label>
@@ -693,8 +777,54 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               )}
 
               <form onSubmit={handleGallerySubmit}>
-                <div className="form-group">
-                  <label className="form-label">Image URL / Path</label>
+                <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <label className="form-label" style={{ margin: 0 }}>Image Source</label>
+                  
+                  {/* File Upload Selector */}
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <label 
+                      className="btn btn-secondary btn-sm"
+                      style={{
+                        margin: 0,
+                        cursor: 'pointer',
+                        padding: '10px 16px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      <Image size={16} className="gold-text" />
+                      {isUploading ? 'Uploading...' : 'Choose Local File'}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => handleImageUpload(e, 'gallery')} 
+                        disabled={isUploading}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+
+                    {galleryForm.imageUrl && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <img 
+                          src={galleryForm.imageUrl.startsWith('http') ? galleryForm.imageUrl : `${backendUrl}${galleryForm.imageUrl}`} 
+                          alt="Preview" 
+                          style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--color-gold)' }}
+                        />
+                        <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '120px' }}>
+                          Selected
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '8px 0' }}>
+                    <div style={{ flexGrow: 1, height: '1px', background: 'var(--border-light)' }} />
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>or use URL path</span>
+                    <div style={{ flexGrow: 1, height: '1px', background: 'var(--border-light)' }} />
+                  </div>
+
                   <input
                     type="text"
                     required
@@ -703,10 +833,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     onChange={(e) => setGalleryForm({ ...galleryForm, imageUrl: e.target.value })}
                     className="form-control"
                   />
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     Available defaults: `/images/gallery_sushi_plating.png`, `/images/gallery_dim_sum_steam.png`, `/images/gallery_restaurant_interior.png`, `/images/gallery_dim_sum_making.png`
                   </span>
                 </div>
+
 
                 <div className="form-group" style={{ marginBottom: '24px' }}>
                   <label className="form-label">Caption / Description</label>
