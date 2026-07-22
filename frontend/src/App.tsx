@@ -11,8 +11,8 @@ import AdminDashboard from './components/AdminDashboard';
 import { ChefHat, Truck, Clock, Sparkles, MapPin, Phone, Award } from 'lucide-react';
 
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || 
-  (window.location.port === '5173' ? 'http://localhost:5000' : 'https://suchi-dimsum.onrender.com');
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://suchi-dimsum.onrender.com';
+
 
 
 
