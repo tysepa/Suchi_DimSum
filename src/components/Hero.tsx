@@ -63,6 +63,7 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
               transform: activeSlide === index ? "scale(1.04)" : "scale(1)",
               transition: "opacity 1.5s ease-in-out, transform 5s ease-in-out",
               pointerEvents: "none",
+              zIndex: activeSlide === index ? 10 : 1,
             }}
           />
         ))}
