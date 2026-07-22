@@ -101,11 +101,30 @@ router.post('/upload', authenticateAdmin, upload.single('image'), async (req: Au
       return res.status(500).json({ message: error.message || 'Cloud image upload failed' });
     }
   } else {
-    // If on Vercel and no apiKey is set, return a clean error instead of trying to write to read-only disk
+    // If on Vercel and no apiKey is set, use Catbox.moe for keyless permanent uploading!
     if (process.env.VERCEL) {
-      return res.status(400).json({ 
-        message: 'Image uploads in production require the IMGBB_API_KEY environment variable to be configured in Vercel settings.' 
-      });
+      try {
+        const formData = new (globalThis as any).FormData();
+        formData.append('reqtype', 'fileupload');
+        
+        const blob = new (globalThis as any).Blob([req.file.buffer], { type: req.file.mimetype });
+        formData.append('fileToUpload', blob, req.file.originalname || 'upload.png');
+
+        const response = await fetch('https://catbox.moe/user/api.php', {
+          method: 'POST',
+          body: formData
+        });
+
+        const text = await response.text();
+        if (!response.ok || !text.startsWith('https://')) {
+          throw new Error(text || 'Failed to upload to Catbox');
+        }
+
+        return res.json({ imageUrl: text.trim() });
+      } catch (error: any) {
+        console.error('Catbox upload error:', error);
+        return res.status(500).json({ message: error.message || 'Keyless image upload failed' });
+      }
     }
 
     const fileUrl = `/images/${req.file.filename}`;
