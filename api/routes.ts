@@ -101,28 +101,30 @@ router.post('/upload', authenticateAdmin, upload.single('image'), async (req: Au
       return res.status(500).json({ message: error.message || 'Cloud image upload failed' });
     }
   } else {
-    // If on Vercel and no apiKey is set, use Catbox.moe for keyless permanent uploading!
+    // If on Vercel and no apiKey is set, use Imgur anonymous API for keyless permanent uploading!
     if (process.env.VERCEL) {
       try {
+        const base64Image = req.file.buffer.toString('base64');
         const formData = new (globalThis as any).FormData();
-        formData.append('reqtype', 'fileupload');
-        
-        const blob = new (globalThis as any).Blob([req.file.buffer], { type: req.file.mimetype });
-        formData.append('fileToUpload', blob, req.file.originalname || 'upload.png');
+        formData.append('image', base64Image);
+        formData.append('type', 'base64');
 
-        const response = await fetch('https://catbox.moe/user/api.php', {
+        const response = await fetch('https://api.imgur.com/3/image', {
           method: 'POST',
+          headers: {
+            'Authorization': 'Client-ID 546c25a59c58ad7'
+          },
           body: formData
         });
 
-        const text = await response.text();
-        if (!response.ok || !text.startsWith('https://')) {
-          throw new Error(text || 'Failed to upload to Catbox');
+        const result: any = await response.json();
+        if (!response.ok || !result.success) {
+          throw new Error(result.data?.error || 'Failed to upload to Imgur');
         }
 
-        return res.json({ imageUrl: text.trim() });
+        return res.json({ imageUrl: result.data.link });
       } catch (error: any) {
-        console.error('Catbox upload error:', error);
+        console.error('Imgur upload error:', error);
         return res.status(500).json({ message: error.message || 'Keyless image upload failed' });
       }
     }
