@@ -6,13 +6,21 @@ interface HeroProps {
   backendUrl: string;
 }
 
+const HERO_IMAGES = [
+  "/images/owner_sushi_platter.jpg",
+  "/images/owner_dumplings.jpg",
+  "/images/gallery_sushi_plating.png",
+  "/images/gallery_dim_sum_steam.png",
+  "/images/gallery_restaurant_interior.png"
+];
+
 const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveSlide((prev) => (prev === 0 ? 1 : 0));
-    }, 6000); // Switches slide every 6 seconds
+      setActiveSlide((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000); // Switches slide every 5 seconds
     return () => clearInterval(timer);
   }, []);
 
@@ -37,67 +45,27 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
           left: 0,
           width: "100%",
           height: "100%",
-          zIndex: 2,
+          zIndex: 0,
           overflow: "hidden",
         }}
       >
-        {/* Slide 1: Golden Dragon Logo */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            transition: "transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            transform:
-              activeSlide === 0 ? "translateX(0)" : "translateX(-100%)",
-            backgroundColor: "#000",
-          }}
-        >
-          {/* Logo image with filter */}
+        {HERO_IMAGES.map((imgUrl, index) => (
           <div
+            key={index}
             style={{
               position: "absolute",
               top: 0,
               left: 0,
               width: "100%",
               height: "100%",
-              background:
-                `url("${backendUrl}/images/logo.png") no-repeat center center`,
-              backgroundSize: "360px",
-              backgroundColor: "#fff",
-              filter: "invert(1) hue-rotate(180deg)",
+              background: `linear-gradient(rgba(11, 12, 16, 0.4), rgba(11, 12, 16, 0.75)), url("${backendUrl}${imgUrl}") no-repeat center center/cover`,
+              opacity: activeSlide === index ? 1 : 0,
+              transform: activeSlide === index ? "scale(1.04)" : "scale(1)",
+              transition: "opacity 1.5s ease-in-out, transform 5s ease-in-out",
+              pointerEvents: "none",
             }}
           />
-          {/* Dark Overlay gradient (not inverted!) */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              background:
-                "linear-gradient(rgba(11, 12, 16, 0.3), rgba(11, 12, 16, 0.6))",
-            }}
-          />
-        </div>
-
-        {/* Slide 2: Steaming Dim Sum Photo */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background:
-              `linear-gradient(rgba(11, 12, 16, 0.3), rgba(11, 12, 16, 0.6)), url("${backendUrl}/images/gallery_dim_sum_steam.png") no-repeat center center/cover`,
-            transition: "transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
-            transform: activeSlide === 1 ? "translateX(0)" : "translateX(100%)",
-          }}
-        />
+        ))}
       </div>
 
       {/* 2. Decorative Radial Overlay */}
@@ -119,7 +87,7 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
       <div
         style={{
           position: "absolute",
-          bottom: "24px",
+          bottom: "32px",
           left: "50%",
           transform: "translateX(-50%)",
           display: "flex",
@@ -127,7 +95,7 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
           zIndex: 15,
         }}
       >
-        {[0, 1].map((idx) => (
+        {HERO_IMAGES.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setActiveSlide(idx)}
@@ -142,11 +110,13 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
               transition: "var(--transition-smooth)",
               border: "none",
               padding: 0,
+              cursor: "pointer",
             }}
             title={`Slide ${idx + 1}`}
           />
         ))}
       </div>
+
 
       {/* 4. Text Content Card */}
       <div className="container" style={{ position: "relative", zIndex: 10 }}>

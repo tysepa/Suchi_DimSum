@@ -35,21 +35,23 @@ export const authenticateAdmin = (req: AuthenticatedRequest, res: Response, next
   }
 };
 
-// Configure Multer Storage for local device uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.resolve(__dirname, '../public/images');
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, 'upload-' + uniqueSuffix + ext);
-  }
-});
+// Configure Multer Storage (memory storage for Vercel/ImgBB uploads, disk storage for local dev)
+const storage = process.env.IMGBB_API_KEY
+  ? multer.memoryStorage()
+  : multer.diskStorage({
+      destination: (req, file, cb) => {
+        const uploadPath = path.resolve(__dirname, '../public/images');
+        if (!fs.existsSync(uploadPath)) {
+          fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        cb(null, uploadPath);
+      },
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = path.extname(file.originalname).toLowerCase();
+        cb(null, 'upload-' + uniqueSuffix + ext);
+      }
+    });
 
 const upload = multer({
   storage,
@@ -67,14 +69,43 @@ const upload = multer({
 });
 
 // File upload endpoint (protected, Admin only)
-router.post('/upload', authenticateAdmin, upload.single('image'), (req: AuthenticatedRequest, res: Response) => {
+router.post('/upload', authenticateAdmin, upload.single('image'), async (req: AuthenticatedRequest, res: Response) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
-  
-  const fileUrl = `/images/${req.file.filename}`;
-  return res.json({ imageUrl: fileUrl });
+
+  const apiKey = process.env.IMGBB_API_KEY;
+
+  if (apiKey) {
+    try {
+      const base64Image = req.file.buffer.toString('base64');
+      const bodyParams = new URLSearchParams();
+      bodyParams.append('image', base64Image);
+
+      const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: bodyParams
+      });
+
+      const result: any = await response.json();
+      if (!response.ok || result.error) {
+        throw new Error(result.error?.message || 'Failed to upload to ImgBB');
+      }
+
+      return res.json({ imageUrl: result.data.url });
+    } catch (error: any) {
+      console.error('ImgBB upload error:', error);
+      return res.status(500).json({ message: error.message || 'Cloud image upload failed' });
+    }
+  } else {
+    const fileUrl = `/images/${req.file.filename}`;
+    return res.json({ imageUrl: fileUrl });
+  }
 });
+
 
 
 // ==========================================
