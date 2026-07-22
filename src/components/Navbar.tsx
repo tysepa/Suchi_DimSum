@@ -68,8 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({
               height: '40px', 
               borderRadius: '50%', 
               objectFit: 'cover', 
-              border: '1px solid var(--color-gold)',
-              filter: 'invert(1) hue-rotate(180deg)'
+              border: '1px solid var(--color-gold)'
             }}
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />

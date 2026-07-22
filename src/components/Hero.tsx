@@ -9,9 +9,9 @@ interface HeroProps {
 const HERO_IMAGES = [
   "/images/owner_sushi_platter.jpg",
   "/images/owner_dumplings.jpg",
-  "/images/gallery_sushi_plating.png",
   "/images/gallery_dim_sum_steam.png",
-  "/images/gallery_restaurant_interior.png"
+  "/images/dragon_roll.png",
+  "/images/salmon_nigiri.png"
 ];
 
 const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
