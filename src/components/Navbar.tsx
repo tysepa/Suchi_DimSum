@@ -28,6 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({
     { name: 'Services', id: 'services' },
     { name: 'Gallery', id: 'gallery' },
     { name: 'About', id: 'about' },
+    { name: 'Contact', id: 'contact' },
   ];
 
   const handleLinkClick = (id: string) => {

@@ -8,7 +8,7 @@ import type { CartItem } from './components/CartDrawer';
 import Gallery from './components/Gallery';
 import type { GalleryItem } from './components/Gallery';
 import AdminDashboard from './components/AdminDashboard';
-import { ChefHat, Truck, Clock, Sparkles, MapPin, Phone, Award } from 'lucide-react';
+import { ChefHat, Truck, Clock, Sparkles, MapPin, Phone, Award, Mail } from 'lucide-react';
 
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || 
@@ -714,6 +714,108 @@ function App() {
             </div>
           </section>
 
+          {/* 6.5 Contact & Subscription Section */}
+          <section id="contact" style={{ padding: '80px 0', background: 'var(--bg-main)', borderTop: '1px solid rgba(255,255,255,0.03)' }}>
+            <div className="container">
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gap: '40px',
+                alignItems: 'start'
+              }}>
+                {/* Contact Form for Reclamations / Feedbacks */}
+                <div className="glass-panel" style={{ padding: '30px', borderRadius: 'var(--radius-md)' }}>
+                  <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', marginBottom: '8px' }}>
+                    Reclamations & Feedback
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                    Have a complaint, reclamation, or suggestion? Send us a direct message.
+                  </p>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    alert('Thank you for your reclamation/feedback. Our support team will contact you shortly at ' + (e.target as any).email.value);
+                    (e.target as any).reset();
+                  }}>
+                    <div style={{ marginBottom: '12px' }}>
+                      <input 
+                        type="text" 
+                        required 
+                        name="name"
+                        placeholder="Your Name" 
+                        className="form-control" 
+                        style={{ height: '42px', fontSize: '0.85rem' }} 
+                      />
+                    </div>
+                    <div style={{ marginBottom: '12px' }}>
+                      <input 
+                        type="email" 
+                        required 
+                        name="email"
+                        placeholder="Your Email" 
+                        className="form-control" 
+                        style={{ height: '42px', fontSize: '0.85rem' }} 
+                      />
+                    </div>
+                    <div style={{ marginBottom: '16px' }}>
+                      <textarea 
+                        required 
+                        name="message"
+                        placeholder="Your Reclamation, Complaint or Message" 
+                        className="form-control" 
+                        rows={4}
+                        style={{ padding: '12px', fontSize: '0.85rem', resize: 'vertical' }} 
+                      />
+                    </div>
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+                      Submit Reclamation
+                    </button>
+                  </form>
+                </div>
+
+                {/* Newsletter Subscription */}
+                <div className="glass-panel" style={{ padding: '30px', borderRadius: 'var(--radius-md)', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <h3 style={{ fontSize: '1.5rem', fontFamily: 'var(--font-serif)', marginBottom: '8px' }}>
+                    Newsletter Subscription
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                    Subscribe to receive promotional codes, special dim sum orders, and weekly menu updates.
+                  </p>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    alert('Thank you for subscribing to our newsletter! Updates will be sent to ' + (e.target as any).email.value);
+                    (e.target as any).reset();
+                  }}>
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                      <input 
+                        type="email" 
+                        required 
+                        name="email"
+                        placeholder="Enter your email" 
+                        className="form-control" 
+                        style={{ height: '42px', fontSize: '0.85rem', flexGrow: 1 }} 
+                      />
+                    </div>
+                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+                      Subscribe Now
+                    </button>
+                  </form>
+
+                  <div style={{ marginTop: '30px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px' }}>
+                    <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-gold)', marginBottom: '4px' }}>
+                      Direct Communication
+                    </p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                      For urgent order claims or subscriptions, email us directly at <br />
+                      <a href="mailto:goldendragongoma505@gmail.com" style={{ color: 'var(--color-gold)', textDecoration: 'none' }}>
+                        goldendragongoma505@gmail.com
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* 7. Restaurant Footer */}
           <footer style={{ backgroundColor: 'hsl(220, 20%, 4%)', padding: '80px 0 40px', color: 'var(--text-secondary)', borderTop: '1px solid rgba(255, 255, 255, 0.03)' }}>
             <div className="container">
@@ -756,11 +858,19 @@ function App() {
                   <ul style={{ listStyle: 'none', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <Phone size={14} className="gold-text" />
-                      +1 (800) 555-GOLD
+                      <a href="tel:+250783737768" style={{ color: 'inherit', textDecoration: 'none' }}>
+                        +250 783 737 768
+                      </a>
+                    </li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Mail size={14} className="gold-text" />
+                      <a href="mailto:goldendragongoma505@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>
+                        goldendragongoma505@gmail.com
+                      </a>
                     </li>
                     <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <MapPin size={14} className="gold-text" />
-                      888 Golden Dragon Ave, Suite S, NY
+                      Kigali, Rwanda
                     </li>
                   </ul>
                   <div style={{ display: 'flex', gap: '16px', marginTop: '20px' }}>
