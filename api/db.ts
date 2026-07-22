@@ -70,7 +70,7 @@ export const initializeDatabase = async () => {
   console.log('Initializing SQLite Database...');
   
   // Ensure the database file or its parent folder exists
-  const dbDir = path.dirname(dbPath);
+  const dbDir = path.dirname(finalDbPath);
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
   }
