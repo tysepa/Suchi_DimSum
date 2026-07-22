@@ -36,7 +36,7 @@ export const authenticateAdmin = (req: AuthenticatedRequest, res: Response, next
 };
 
 // Configure Multer Storage (memory storage for Vercel/ImgBB uploads, disk storage for local dev)
-const storage = process.env.IMGBB_API_KEY
+const storage = (process.env.IMGBB_API_KEY || process.env.VERCEL)
   ? multer.memoryStorage()
   : multer.diskStorage({
       destination: (req, file, cb) => {
@@ -101,6 +101,13 @@ router.post('/upload', authenticateAdmin, upload.single('image'), async (req: Au
       return res.status(500).json({ message: error.message || 'Cloud image upload failed' });
     }
   } else {
+    // If on Vercel and no apiKey is set, return a clean error instead of trying to write to read-only disk
+    if (process.env.VERCEL) {
+      return res.status(400).json({ 
+        message: 'Image uploads in production require the IMGBB_API_KEY environment variable to be configured in Vercel settings.' 
+      });
+    }
+
     const fileUrl = `/images/${req.file.filename}`;
     return res.json({ imageUrl: fileUrl });
   }

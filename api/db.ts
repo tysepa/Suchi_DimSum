@@ -3,8 +3,23 @@ import path from 'path';
 import bcrypt from 'bcryptjs';
 import fs from 'fs';
 
-const dbPath = path.resolve(__dirname, '../database.sqlite');
-const db = new sqlite3.Database(dbPath);
+const isVercel = !!process.env.VERCEL;
+let finalDbPath = path.resolve(__dirname, '../database.sqlite');
+
+if (isVercel) {
+  const tmpDbPath = '/tmp/database.sqlite';
+  if (!fs.existsSync(tmpDbPath)) {
+    try {
+      fs.copyFileSync(finalDbPath, tmpDbPath);
+      console.log('Successfully copied SQLite DB to /tmp for writing');
+    } catch (err) {
+      console.error('Failed to copy database to /tmp:', err);
+    }
+  }
+  finalDbPath = tmpDbPath;
+}
+
+const db = new sqlite3.Database(finalDbPath);
 
 export interface Product {
   id: number;
