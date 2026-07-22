@@ -8,6 +8,7 @@ interface HeroProps {
 
 const HERO_IMAGES = [
   "/images/owner_sushi_platter.jpg",
+  "/images/chef_muami.jpg",
   "/images/owner_dumplings.jpg",
   "/images/gallery_dim_sum_steam.png",
   "/images/dragon_roll.png",
