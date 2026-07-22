@@ -34,7 +34,7 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
         alignItems: "center",
         paddingTop: "80px",
         overflow: "hidden",
-        backgroundColor: "#000",
+        // backgroundColor: "#00000004",
       }}
     >
       {/* 1. Background Slider Container */}
@@ -58,7 +58,7 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
               left: 0,
               width: "100%",
               height: "100%",
-              background: `linear-gradient(rgba(11, 12, 16, 0.4), rgba(11, 12, 16, 0.75)), url("${backendUrl}${imgUrl}") no-repeat center center/cover`,
+              background: `url("${backendUrl}${imgUrl}") no-repeat center center/cover`,
               opacity: activeSlide === index ? 1 : 0,
               transform: activeSlide === index ? "scale(1.04)" : "scale(1)",
               transition: "opacity 1.5s ease-in-out, transform 5s ease-in-out",
@@ -68,21 +68,6 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
           />
         ))}
       </div>
-
-      {/* 2. Decorative Radial Overlay */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background:
-            "radial-gradient(circle at center, transparent 30%, var(--bg-main) 90%)",
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      />
 
       {/* 3. Slider Dot Indicators */}
       <div
@@ -151,21 +136,23 @@ const Hero: React.FC<HeroProps> = ({ onExploreClick, backendUrl }) => {
               lineHeight: 1.15,
               marginBottom: "20px",
               fontFamily: "var(--font-serif)",
+              textShadow: "0 2px 15px rgba(0, 0, 0, 0.95), 0 1px 4px rgba(0, 0, 0, 0.95)",
             }}
           >
-            The Art of <span className="gold-text">Sushi</span> & <br />
-            Steamed <span className="gold-text">Dim Sum</span>
+            The Art of <span className="gold-text" style={{ textShadow: "none" }}>Sushi</span> & <br />
+            Steamed <span className="gold-text" style={{ textShadow: "none" }}>Dim Sum</span>
           </h1>
 
           {/* Description */}
           <p
             style={{
               fontSize: "1.1rem",
-              color: "var(--text-secondary)",
+              color: "#ffffff",
               marginBottom: "36px",
-              fontWeight: 300,
+              fontWeight: 400,
               lineHeight: 1.7,
               maxWidth: "560px",
+              textShadow: "0 2px 12px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.95)",
             }}
           >
             Welcome to Golden Dragon. Experience the culinary harmony of
