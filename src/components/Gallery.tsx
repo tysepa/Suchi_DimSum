@@ -14,6 +14,7 @@ interface GalleryProps {
 
 const Gallery: React.FC<GalleryProps> = ({ items, backendUrl }) => {
   const [activeItem, setActiveItem] = useState<GalleryItem | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const getFullImgUrl = (path: string) => {
     return path.startsWith('http') ? path : `${backendUrl}${path}`;
@@ -50,7 +51,7 @@ const Gallery: React.FC<GalleryProps> = ({ items, backendUrl }) => {
           gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
           gap: '24px'
         }}>
-          {items.map((item) => (
+          {(isExpanded ? items : items.slice(0, 4)).map((item) => (
             <div 
               key={item.id}
               onClick={() => setActiveItem(item)}
@@ -125,6 +126,18 @@ const Gallery: React.FC<GalleryProps> = ({ items, backendUrl }) => {
             </div>
           ))}
         </div>
+
+        {items.length > 4 && (
+          <div style={{ textAlign: 'center', marginTop: '36px' }}>
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="btn btn-secondary"
+              style={{ padding: '12px 30px', fontSize: '0.9rem', cursor: 'pointer' }}
+            >
+              {isExpanded ? 'Show Less' : 'See More'}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Lightbox / Zoom Dialog Modal */}
