@@ -892,7 +892,7 @@ function App() {
                 fontSize: '0.75rem',
                 color: 'var(--text-muted)'
               }}>
-                <p>&copy; {new Date().getFullYear()} GOLDEN DRAGON Asian Gastronomy. All rights reserved. Handcrafted delivery on client command.</p>
+                <p>&copy; {new Date().getFullYear()} GOLDEN DRAGON Asian Gastronomy. All rights reserved. Made by Epa Tech.</p>
               </div>
             </div>
           </footer>
