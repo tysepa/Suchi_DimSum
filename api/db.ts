@@ -125,11 +125,11 @@ export const initializeDatabase = async () => {
   `);
 
   // Seed default Admin if not exists
-  const admins = await query('SELECT * FROM admin WHERE username = ?', ['admin']);
+  const admins = await query('SELECT * FROM admin WHERE username = ?', ['Dragon']);
   if (admins.length === 0) {
-    const passwordHash = bcrypt.hashSync('admin123', 10);
-    await run('INSERT INTO admin (username, passwordHash) VALUES (?, ?)', ['admin', passwordHash]);
-    console.log('Default admin seeded (username: admin, password: admin123)');
+    const passwordHash = bcrypt.hashSync('Dragon2017', 10);
+    await run('INSERT INTO admin (username, passwordHash) VALUES (?, ?)', ['Dragon', passwordHash]);
+    console.log('Default admin seeded (username: Dragon, password: Dragon2017)');
   }
 
   // Seed default Products if empty
