@@ -35,6 +35,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
 
   if (!isOpen) return null;
 
+  const USD_TO_RWF = 1400;
   const total = cartItems.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
@@ -196,7 +197,12 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
                 </div>
                 <div>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>TOTAL VALUE</span>
-                  <p style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--color-gold)' }}>${orderSuccess.totalPrice.toFixed(2)}</p>
+                  <p style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--color-gold)' }}>
+                    ${orderSuccess.totalPrice.toFixed(2)}
+                  </p>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    ≈ {(orderSuccess.totalPrice * USD_TO_RWF).toLocaleString()} RWF
+                  </p>
                 </div>
               </div>
 
@@ -255,6 +261,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
                       </h4>
                       <p style={{ color: 'var(--color-gold)', fontSize: '0.9rem', fontWeight: 700 }}>
                         ${item.product.price.toFixed(2)}
+                      </p>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                        ≈ {(item.product.price * USD_TO_RWF).toLocaleString()} RWF
                       </p>
                     </div>
 
@@ -326,9 +335,14 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
               marginBottom: '20px'
             }}>
               <span style={{ fontSize: '0.95rem', color: 'var(--text-secondary)' }}>Delivery Value:</span>
-              <span style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--color-gold)' }}>
-                ${total.toFixed(2)}
-              </span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--color-gold)', display: 'block' }}>
+                  ${total.toFixed(2)}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  ≈ {(total * USD_TO_RWF).toLocaleString()} RWF
+                </span>
+              </div>
             </div>
 
             {/* Error Message */}

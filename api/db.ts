@@ -116,6 +116,14 @@ export const initializeDatabase = async () => {
     )
   `);
 
+  await run(`
+    CREATE TABLE IF NOT EXISTS subscribers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      subscribedAt TEXT NOT NULL
+    )
+  `);
+
   // Seed default Admin if not exists
   const admins = await query('SELECT * FROM admin WHERE username = ?', ['admin']);
   if (admins.length === 0) {

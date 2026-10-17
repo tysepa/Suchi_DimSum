@@ -426,4 +426,58 @@ router.put('/orders/:id', authenticateAdmin, async (req: AuthenticatedRequest, r
   }
 });
 
+// ==========================================
+// 5. SUBSCRIBERS (NEWSLETTER)
+// ==========================================
+
+// Subscribe (Public) - saves email to DB
+router.post('/subscribers', async (req: Request, res: Response) => {
+  const { email } = req.body;
+  if (!email || !email.includes('@')) {
+    return res.status(400).json({ message: 'A valid email address is required' });
+  }
+  try {
+    const existing = await query('SELECT * FROM subscribers WHERE email = ?', [email]);
+    if (existing.length > 0) {
+      return res.status(409).json({ message: 'This email is already subscribed' });
+    }
+    const subscribedAt = new Date().toISOString();
+    const result = await run(
+      'INSERT INTO subscribers (email, subscribedAt) VALUES (?, ?)',
+      [email, subscribedAt]
+    );
+    return res.status(201).json({ id: result.lastID, email, subscribedAt });
+  } catch (error: any) {
+    console.error('Subscribe error:', error);
+    return res.status(500).json({ message: 'Failed to subscribe' });
+  }
+});
+
+// Get all subscribers (Admin only)
+router.get('/subscribers', authenticateAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const subscribers = await query('SELECT * FROM subscribers ORDER BY subscribedAt DESC');
+    return res.json(subscribers);
+  } catch (error: any) {
+    console.error('Get subscribers error:', error);
+    return res.status(500).json({ message: 'Failed to retrieve subscribers' });
+  }
+});
+
+// Delete a subscriber (Admin only)
+router.delete('/subscribers/:id', authenticateAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  try {
+    const existing = await query('SELECT * FROM subscribers WHERE id = ?', [id]);
+    if (existing.length === 0) {
+      return res.status(404).json({ message: 'Subscriber not found' });
+    }
+    await run('DELETE FROM subscribers WHERE id = ?', [id]);
+    return res.json({ message: 'Subscriber removed', id: Number(id) });
+  } catch (error: any) {
+    console.error('Delete subscriber error:', error);
+    return res.status(500).json({ message: 'Failed to remove subscriber' });
+  }
+});
+
 export default router;

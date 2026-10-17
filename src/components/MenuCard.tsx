@@ -16,6 +16,8 @@ interface MenuCardProps {
   backendUrl: string;
 }
 
+const USD_TO_RWF = 1400; // 1 USD ≈ 1,400 RWF
+
 const MenuCard: React.FC<MenuCardProps> = ({ product, onAddToOrder, backendUrl }) => {
   // Resolve image URL
   const imgUrl = product.imageUrl.startsWith('http') 
@@ -103,17 +105,24 @@ const MenuCard: React.FC<MenuCardProps> = ({ product, onAddToOrder, backendUrl }
           paddingTop: '16px',
           borderTop: '1px solid var(--border-light)'
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Price
             </span>
             <span style={{
-              fontSize: '1.4rem',
+              fontSize: '1.3rem',
               fontWeight: 700,
               fontFamily: 'var(--font-sans)',
               color: 'var(--color-gold)'
             }}>
               ${product.price.toFixed(2)}
+            </span>
+            <span style={{
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)',
+              fontWeight: 500
+            }}>
+              ≈ {(product.price * USD_TO_RWF).toLocaleString()} RWF
             </span>
           </div>
 
